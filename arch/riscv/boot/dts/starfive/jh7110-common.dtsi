@@ -18,6 +18,8 @@
 		i2c6 = &i2c6;
 		mmc0 = &mmc0;
 		mmc1 = &mmc1;
+		pcie0 = &pcie0;
+		pcie1 = &pcie1;
 		serial0 = &uart0;
 	};
 
