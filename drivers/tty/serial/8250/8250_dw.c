@@ -594,6 +594,9 @@ static int dw8250_probe(struct platform_device *pdev)
 		data->msr_mask_off |= UART_MSR_TERI;
 	}
 
+	if (device_property_read_bool(dev, "auto-flow-control"))
+		up->probe |= UART_PROBE_AFE;
+
 	/* If there is separate baudclk, get the rate from it. */
 	data->clk = devm_clk_get_optional_enabled(dev, "baudclk");
 	if (data->clk == NULL)
