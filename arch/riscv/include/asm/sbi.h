@@ -60,6 +60,9 @@ enum sbi_ext_time_fid {
 
 enum sbi_ext_ipi_fid {
 	SBI_EXT_IPI_SEND_IPI = 0,
+	SBI_EXT_IPI_SEND_EXT_DOMAIN = 0x100,
+	SBI_EXT_IPI_SET_AMP_DATA_ADDR = 0x101,
+	SBI_EXT_IPI_CLEAR_IPI = 0x102,
 };
 
 enum sbi_ext_rfence_fid {
@@ -300,6 +303,12 @@ struct sbi_sta_struct {
 #define SBI_ERR_NO_SHMEM	-9
 
 extern unsigned long sbi_spec_version;
+#ifdef CONFIG_RISCV_AMP
+struct amp_data {
+	unsigned long amp_bits;
+};
+#endif
+
 struct sbiret {
 	long error;
 	long value;
@@ -419,4 +428,8 @@ static inline bool riscv_use_sbi_for_rfence(void) { return false; }
 static inline void sbi_ipi_init(void) { }
 #endif
 
+#ifdef CONFIG_RISCV_AMP
+int sbi_send_ipi_amp(unsigned int hartid, unsigned int msg_type);
+int sbi_amp_data_init(void *riscv_amp_data);
+#endif
 #endif /* _ASM_RISCV_SBI_H */
