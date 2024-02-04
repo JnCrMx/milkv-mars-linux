@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0
 
-purgatory-y := purgatory.o sha256.o entry.o string.o ctype.o memcpy.o memset.o
+purgatory-y := purgatory.o sha256.o entry.o string.o ctype.o memcpy_aligned.o memcpy.o memset.o
 ifeq ($(CONFIG_KASAN_GENERIC)$(CONFIG_KASAN_SW_TAGS),)
 purgatory-y += strcmp.o strlen.o strncmp.o
 endif
@@ -14,8 +14,11 @@ $(obj)/string.o: $(srctree)/lib/string.c FORCE
 $(obj)/ctype.o: $(srctree)/lib/ctype.c FORCE
 	$(call if_changed_rule,cc_o_c)
 
-$(obj)/memcpy.o: $(srctree)/arch/riscv/lib/memcpy.S FORCE
+$(obj)/memcpy_aligned.o: $(srctree)/arch/riscv/lib/memcpy_aligned.S FORCE
 	$(call if_changed_rule,as_o_S)
+
+$(obj)/memcpy.o: $(srctree)/arch/riscv/lib/string.c FORCE
+	$(call if_changed_rule,cc_o_c)
 
 $(obj)/memset.o: $(srctree)/arch/riscv/lib/memset.S FORCE
 	$(call if_changed_rule,as_o_S)
