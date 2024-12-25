@@ -13,7 +13,10 @@
 	aliases {
 		ethernet0 = &gmac0;
 		i2c0 = &i2c0;
+		i2c1 = &i2c1;
 		i2c2 = &i2c2;
+		i2c3 = &i2c3;
+		i2c4 = &i2c4;
 		i2c5 = &i2c5;
 		i2c6 = &i2c6;
 		mmc0 = &mmc0;
@@ -21,6 +24,7 @@
 		pcie0 = &pcie0;
 		pcie1 = &pcie1;
 		serial0 = &uart0;
+		serial3 = &uart3;
 	};
 
 	chosen {
@@ -35,7 +39,7 @@
 	gpio-restart {
 		compatible = "gpio-restart";
 		gpios = <&sysgpio 35 GPIO_ACTIVE_HIGH>;
-		priority = <224>;
+		priority = <160>;
 	};
 
 	pwmdac_codec: audio-codec {
@@ -43,9 +47,9 @@
 		#sound-dai-cells = <0>;
 	};
 
-	sound {
+	sound3: snd-card3 {
 		compatible = "simple-audio-card";
-		simple-audio-card,name = "StarFive-PWMDAC-Sound-Card";
+		simple-audio-card,name = "Starfive-PWMDAC-Sound-Card";
 		#address-cells = <1>;
 		#size-cells = <0>;
 
@@ -225,11 +229,36 @@
 		#interrupt-cells = <1>;
 
 		regulators {
+			mipi_0p9: ALDO1 {
+				regulator-boot-on;
+				regulator-compatible = "aldo1";
+				regulator-name = "mipi_0p9";
+				regulator-min-microvolt = <900000>;
+				regulator-max-microvolt = <900000>;
+			};
+
+			hdmi_0p9: ALDO5 {
+				regulator-boot-on;
+				regulator-compatible = "aldo5";
+				regulator-name = "hdmi_0p9";
+				regulator-min-microvolt = <900000>;
+				regulator-max-microvolt = <900000>;
+			};
+
+			hdmi_1p8: ALDO3 {
+				regulator-boot-on;
+				regulator-compatible = "aldo3";
+				regulator-name = "hdmi_1p8";
+				regulator-min-microvolt = <1800000>;
+				regulator-max-microvolt = <1800000>;
+			};
+
 			vcc_3v3: dcdc1 {
 				regulator-boot-on;
 				regulator-always-on;
 				regulator-min-microvolt = <3300000>;
 				regulator-max-microvolt = <3300000>;
+				regulator-compatible = "dcdc1";
 				regulator-name = "vcc_3v3";
 			};
 
@@ -237,6 +266,7 @@
 				regulator-always-on;
 				regulator-min-microvolt = <500000>;
 				regulator-max-microvolt = <1540000>;
+				regulator-compatible = "dcdc2";
 				regulator-name = "vdd-cpu";
 			};
 
@@ -245,6 +275,7 @@
 				regulator-always-on;
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <3300000>;
+				regulator-compatible = "aldo4";
 				regulator-name = "emmc_vdd";
 			};
 		};
