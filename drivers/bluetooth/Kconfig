@@ -505,4 +505,10 @@ config BT_INTEL_PCIE
 
 	  Say Y here to compiler support for Intel Bluetooth PCIe device into
 	  the kernel or say M to compile it as module (btintel_pcie)
+
+config BT_AICUSB
+	tristate "AIC8800 btusb driver"
+	help
+	  AIC8800 usb dongle bluetooth support driver
+
 endmenu
