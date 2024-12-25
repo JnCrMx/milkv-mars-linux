@@ -151,7 +151,6 @@ static struct drm_driver vs_drm_driver = {
 	.driver_features	= DRIVER_MODESET | DRIVER_ATOMIC | DRIVER_GEM,
 
 #ifdef CONFIG_SOC_STARFIVE_VF2_VOUT
-	.lastclose		= drm_fb_helper_lastclose,
 	.gem_prime_import	= vs_gem_prime_import,
 	.gem_prime_import_sg_table = vs_gem_prime_import_sg_table,
 	.dumb_create		= vs_gem_dumb_create,
