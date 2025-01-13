@@ -251,9 +251,9 @@ static int video_queue_setup(struct vb2_queue *q,
 	unsigned int sizes[], struct device *alloc_devs[])
 {
 	struct stfcamss_video *video = vb2_get_drv_priv(q);
-	const struct v4l2_pix_format *format =
+	struct v4l2_pix_format *format =
 			&video->active_fmt.fmt.pix;
-	const struct v4l2_pix_format_mplane *format_mp =
+	struct v4l2_pix_format_mplane *format_mp =
 			&video->active_fmt.fmt.pix_mp;
 	unsigned int i;
 
@@ -274,8 +274,10 @@ static int video_queue_setup(struct vb2_queue *q,
 
 		*num_planes = format_mp->num_planes;
 
-		for (i = 0; i < *num_planes; i++)
-			sizes[i] = format_mp->plane_fmt[i].sizeimage;
+		for (i = 0; i < *num_planes; i++){
+			format_mp->plane_fmt[i].sizeimage = sizes[i] =
+				max_t(unsigned int, format_mp->plane_fmt[i].sizeimage, sizes[i]);
+		}
 	} else {
 		if (*num_planes) {
 			if (*num_planes != 1)
@@ -286,7 +288,8 @@ static int video_queue_setup(struct vb2_queue *q,
 		}
 
 		*num_planes  = 1;
-		sizes[0] = format->sizeimage;
+		format->sizeimage = sizes[0] =
+			max_t(unsigned int, format->sizeimage, sizes[0]);
 		if (!sizes[0])
 			st_err(ST_VIDEO, "%s: error size is zero!!!\n", __func__);
 	}
