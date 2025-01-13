@@ -2908,6 +2908,12 @@ static int ov4689_probe(struct i2c_client *client)
 	if (ret)
 		goto error_power_off;
 
+	ret = v4l2_subdev_init_finalize(&sensor->sd);
+	if (ret < 0) {
+		dev_err_probe(dev, ret, "subdev init error\n");
+		goto error_power_off;
+	}
+
 	ret = v4l2_async_register_subdev_sensor(&sensor->sd);
 	if (ret)
 		goto free_ctrls;
