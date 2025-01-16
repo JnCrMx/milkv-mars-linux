@@ -200,10 +200,6 @@ static int wave5_vpu_probe(struct platform_device *pdev)
 				     "Failed to get reset control\n");
 	}
 
-	ret = reset_control_deassert(dev->resets);
-	if (ret)
-		return dev_err_probe(&pdev->dev, ret, "Failed to deassert resets\n");
-
 	ret = devm_clk_bulk_get_all(&pdev->dev, &dev->clks);
 
 	/* continue without clock, assume externally managed */
@@ -217,16 +213,20 @@ static int wave5_vpu_probe(struct platform_device *pdev)
 	dev->sram_buf.size = VDI_WAVE511_SRAM_SIZE;
 
 	ret = clk_bulk_prepare_enable(dev->num_clks, dev->clks);
+	if (ret)
+		return dev_err_probe(&pdev->dev, ret, "Enabling clocks, fail\n");
+
+	ret = reset_control_deassert(dev->resets);
 	if (ret) {
-		dev_err(&pdev->dev, "Enabling clocks, fail: %d\n", ret);
-		goto err_reset_assert;
+		dev_err(&pdev->dev, "Failed to deassert resets: %d\n", ret);
+		goto err_clk_dis;
 	}
 
 	dev->product_code = wave5_vdi_read_register(dev, VPU_PRODUCT_CODE_REGISTER);
 	ret = wave5_vdi_init(&pdev->dev);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "wave5_vdi_init, fail: %d\n", ret);
-		goto err_clk_dis;
+		goto err_reset_assert;
 	}
 	dev->product = wave5_vpu_get_product_id(dev);
 
@@ -307,10 +307,10 @@ err_v4l2_unregister:
 	v4l2_device_unregister(&dev->v4l2_dev);
 err_vdi_release:
 	wave5_vdi_release(&pdev->dev);
-err_clk_dis:
-	clk_bulk_disable_unprepare(dev->num_clks, dev->clks);
 err_reset_assert:
 	reset_control_assert(dev->resets);
+err_clk_dis:
+	clk_bulk_disable_unprepare(dev->num_clks, dev->clks);
 
 	return ret;
 }
