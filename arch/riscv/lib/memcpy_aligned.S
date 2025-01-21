@@ -80,6 +80,5 @@ SYM_FUNC_START(__memcpy_aligned)
 6:
 	ret
 SYM_FUNC_END(__memcpy_aligned)
-SYM_FUNC_ALIAS_WEAK(memcpy, __memcpy_aligned)
 SYM_FUNC_ALIAS(__pi_memcpy, __memcpy_aligned)
 SYM_FUNC_ALIAS(__pi___memcpy, __memcpy_aligned)
