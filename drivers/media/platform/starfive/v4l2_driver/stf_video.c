@@ -580,7 +580,7 @@ static int video_start_streaming(struct vb2_queue *q, unsigned int count)
 		entity = pad->entity;
 		subdev = media_entity_to_v4l2_subdev(entity);
 
-		ret = v4l2_subdev_call(subdev, video, s_stream, 1);
+		ret = subdev->ops->video->s_stream(subdev, 1);
 		if (ret < 0 && ret != -ENOIOCTLCMD)
 			goto error;
 	}
@@ -613,7 +613,7 @@ static void video_stop_streaming(struct vb2_queue *q)
 		entity = pad->entity;
 		subdev = media_entity_to_v4l2_subdev(entity);
 
-		v4l2_subdev_call(subdev, video, s_stream, 0);
+		subdev->ops->video->s_stream(subdev, 0);
 	}
 
 	video_device_pipeline_stop(vdev);
