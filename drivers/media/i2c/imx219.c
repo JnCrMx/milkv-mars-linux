@@ -153,6 +153,10 @@ struct imx219_mode {
 	unsigned int width;
 	/* Frame height */
 	unsigned int height;
+
+	/* Analog crop rectangle. */
+	struct v4l2_rect crop;
+
 	/* Frame rate */
 	u8 fps;
 
@@ -292,6 +296,12 @@ static const struct imx219_mode supported_modes[] = {
 		/* 8MPix 15fps mode */
 		.width = 3280,
 		.height = 2464,
+		.crop = {
+			.left = IMX219_PIXEL_ARRAY_LEFT,
+			.top = IMX219_PIXEL_ARRAY_TOP,
+			.width = 3280,
+			.height = 2464
+		},
 		.vts_def = 3526,
 		.fps = 15,
 	},
@@ -299,6 +309,12 @@ static const struct imx219_mode supported_modes[] = {
 		/* 1080P 30fps cropped */
 		.width = 1920,
 		.height = 1080,
+		.crop = {
+			.left = 688,
+			.top = 700,
+			.width = 1920,
+			.height = 1080
+		},
 		.vts_def = 1763,
 		.fps = 30,
 	},
@@ -306,6 +322,12 @@ static const struct imx219_mode supported_modes[] = {
 		/* 2x2 binned 30fps mode */
 		.width = 1640,
 		.height = 1232,
+		.crop = {
+			.left = IMX219_PIXEL_ARRAY_LEFT,
+			.top = IMX219_PIXEL_ARRAY_TOP,
+			.width = 3280,
+			.height = 2464
+		},
 		.vts_def = 1763,
 		.fps = 30,
 	},
@@ -313,6 +335,12 @@ static const struct imx219_mode supported_modes[] = {
 		/* 640x480 30fps mode */
 		.width = 640,
 		.height = 480,
+		.crop = {
+			.left = 1008,
+			.top = 760,
+			.width = 1280,
+			.height = 960
+		},
 		.vts_def = 1763,
 		.fps = 30,
 	},
@@ -912,7 +940,6 @@ static int imx219_set_pad_format(struct v4l2_subdev *sd,
 	const struct imx219_mode *mode;
 	struct v4l2_mbus_framefmt *format;
 	struct v4l2_rect *crop;
-	unsigned int bin_h, bin_v;
 
 	mode = v4l2_find_nearest_size(supported_modes,
 				      ARRAY_SIZE(supported_modes),
@@ -926,20 +953,9 @@ static int imx219_set_pad_format(struct v4l2_subdev *sd,
 	imx219->frame_interval.denominator = mode->fps;
 
 	format = v4l2_subdev_state_get_format(state, 0);
-	*format = fmt->format;
-
-	/*
-	 * Use binning to maximize the crop rectangle size, and centre it in the
-	 * sensor.
-	 */
-	bin_h = min(IMX219_PIXEL_ARRAY_WIDTH / format->width, 2U);
-	bin_v = min(IMX219_PIXEL_ARRAY_HEIGHT / format->height, 2U);
-
 	crop = v4l2_subdev_state_get_crop(state, 0);
-	crop->width = format->width * bin_h;
-	crop->height = format->height * bin_v;
-	crop->left = (IMX219_NATIVE_WIDTH - crop->width) / 2;
-	crop->top = (IMX219_NATIVE_HEIGHT - crop->height) / 2;
+	*format = fmt->format;
+	*crop = mode->crop;
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_ACTIVE) {
 		int exposure_max;

@@ -251,9 +251,9 @@ static int video_queue_setup(struct vb2_queue *q,
 	unsigned int sizes[], struct device *alloc_devs[])
 {
 	struct stfcamss_video *video = vb2_get_drv_priv(q);
-	const struct v4l2_pix_format *format =
+	struct v4l2_pix_format *format =
 			&video->active_fmt.fmt.pix;
-	const struct v4l2_pix_format_mplane *format_mp =
+	struct v4l2_pix_format_mplane *format_mp =
 			&video->active_fmt.fmt.pix_mp;
 	unsigned int i;
 
@@ -274,8 +274,10 @@ static int video_queue_setup(struct vb2_queue *q,
 
 		*num_planes = format_mp->num_planes;
 
-		for (i = 0; i < *num_planes; i++)
-			sizes[i] = format_mp->plane_fmt[i].sizeimage;
+		for (i = 0; i < *num_planes; i++){
+			format_mp->plane_fmt[i].sizeimage = sizes[i] =
+				max_t(unsigned int, format_mp->plane_fmt[i].sizeimage, sizes[i]);
+		}
 	} else {
 		if (*num_planes) {
 			if (*num_planes != 1)
@@ -286,7 +288,8 @@ static int video_queue_setup(struct vb2_queue *q,
 		}
 
 		*num_planes  = 1;
-		sizes[0] = format->sizeimage;
+		format->sizeimage = sizes[0] =
+			max_t(unsigned int, format->sizeimage, sizes[0]);
 		if (!sizes[0])
 			st_err(ST_VIDEO, "%s: error size is zero!!!\n", __func__);
 	}
@@ -580,7 +583,7 @@ static int video_start_streaming(struct vb2_queue *q, unsigned int count)
 		entity = pad->entity;
 		subdev = media_entity_to_v4l2_subdev(entity);
 
-		ret = v4l2_subdev_call(subdev, video, s_stream, 1);
+		ret = subdev->ops->video->s_stream(subdev, 1);
 		if (ret < 0 && ret != -ENOIOCTLCMD)
 			goto error;
 	}
@@ -613,7 +616,7 @@ static void video_stop_streaming(struct vb2_queue *q)
 		entity = pad->entity;
 		subdev = media_entity_to_v4l2_subdev(entity);
 
-		v4l2_subdev_call(subdev, video, s_stream, 0);
+		subdev->ops->video->s_stream(subdev, 0);
 	}
 
 	video_device_pipeline_stop(vdev);
