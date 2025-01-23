@@ -356,7 +356,10 @@ static int setup_wave5_properties(struct device *dev)
 	hw_config_def1 = vpu_read_reg(vpu_dev, W5_RET_STD_DEF1);
 	hw_config_feature = vpu_read_reg(vpu_dev, W5_RET_CONF_FEATURE);
 
-	if (vpu_dev->product_code == WAVE515_CODE) {
+	if (vpu_dev->product_code == WAVE511_CODE) {
+		p_attr->support_decoders = 1 << STD_AVC;
+		p_attr->support_decoders |= 1 << STD_HEVC;
+	} else if (vpu_dev->product_code == WAVE515_CODE) {
 		p_attr->support_hevc10bit_dec = FIELD_GET(W515_FEATURE_HEVC10BIT_DEC,
 							  hw_config_feature);
 		p_attr->support_decoders = FIELD_GET(W515_FEATURE_HEVC_DECODER,
