@@ -1908,7 +1908,6 @@ static int pl022_platform_probe(struct platform_device *pdev, const struct amba_
 	/* If open CONFIG_PM, auto_runtime_pm should be false when of-platform.*/
 	host->auto_runtime_pm = true;
 	host->transfer_one = pl022_transfer_one;
-	host->set_cs = pl022_cs_control;
 	host->handle_err = pl022_handle_err;
 	host->unprepare_transfer_hardware = pl022_unprepare_transfer_hardware;
 	host->rt = platform_info->rt;
@@ -2434,8 +2433,6 @@ static void starfive_of_pl022_remove(struct platform_device *pdev)
 	load_ssp_default_config(pl022);
 	if (pl022->host_info->enable_dma)
 		pl022_dma_remove(pl022);
-
-	clk_disable_unprepare(pl022->clk);
 
 	pm_runtime_put_noidle(&pdev->dev);
 	pm_runtime_disable(&pdev->dev);
