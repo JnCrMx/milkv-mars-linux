@@ -332,6 +332,19 @@ static const struct imx219_mode supported_modes[] = {
 		.fps = 30,
 	},
 	{
+		/* 1280x720 30fps mode */
+		.width = 1280,
+		.height = 720,
+		.fps = 30,
+		.crop = {
+			.left = 360,
+			.top = 512,
+			.width = 2560,
+			.height = 1440
+		},
+		.vts_def = 1763,
+	},
+	{
 		/* 640x480 30fps mode */
 		.width = 640,
 		.height = 480,
