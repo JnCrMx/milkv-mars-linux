@@ -1905,7 +1905,7 @@ static struct i2c_driver sc2235_i2c_driver = {
 		.pm = &sc2235_pm_ops,
 	},
 	.id_table = sc2235_id,
-	.probe_new = sc2235_probe,
+	.probe = sc2235_probe,
 	.remove   = sc2235_remove,
 };
 

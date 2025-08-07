@@ -35,6 +35,8 @@
 
 #include "stfcamss.h"
 
+MODULE_IMPORT_NS(DMA_BUF);
+
 #ifdef STF_DEBUG
 unsigned int stdbg_level = ST_DEBUG;
 unsigned int stdbg_mask = 0x7F;
