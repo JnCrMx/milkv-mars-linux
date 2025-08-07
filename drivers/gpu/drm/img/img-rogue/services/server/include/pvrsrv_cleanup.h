@@ -77,11 +77,11 @@ typedef PVRSRV_ERROR (*CLEANUP_THREAD_FN)(void *pvParam);
  * A value of 200 corresponds to around ~20s (200 * 100ms). If it is not
  * successful by then give up as an unrecoverable problem has occurred.
  */
-#define CLEANUP_THREAD_RETRY_COUNT_DEFAULT 200u
+#define CLEANUP_THREAD_RETRY_COUNT_DEFAULT 2000u
 /* Like for CLEANUP_THREAD_RETRY_COUNT_DEFAULT but call will wait for
  * a specified amount of time rather than number of retries.
  */
-#define CLEANUP_THREAD_RETRY_TIMEOUT_MS_DEFAULT 20000u /* 20s */
+#define CLEANUP_THREAD_RETRY_TIMEOUT_MS_DEFAULT 200000u /* 20s */
 
 /* Use to set retry count on a cleanup item.
  * _item - pointer to the PVRSRV_CLEANUP_THREAD_WORK
